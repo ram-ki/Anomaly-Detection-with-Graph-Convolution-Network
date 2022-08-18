@@ -7,6 +7,7 @@ import scipy.io
 from sklearn.metrics import roc_auc_score
 from datetime import datetime
 import argparse
+import os.path
 
 from model import Dominant
 from utils import load_anomaly_detection_dataset
@@ -36,9 +37,12 @@ def train_dominant(args):
     adj_label = torch.FloatTensor(adj_label)
     attrs = torch.FloatTensor(attrs)
 
-
+    
     model = Dominant(feat_size = attrs.size(1), hidden_size = args.hidden_dim, dropout = args.dropout)
 
+    if os.path.exists(args.model_path) and args.train == False:
+        model.load_state_dict(torch.load(args.model_path))
+        print("load model")
 
     if args.device == 'cuda':
         device = torch.device(args.device)
@@ -51,33 +55,47 @@ def train_dominant(args):
     optimizer = torch.optim.Adam(model.parameters(), lr = args.lr)
     
 
-    for epoch in range(args.epoch):
-        model.train()
-        optimizer.zero_grad()
-        A_hat, X_hat = model(attrs, adj)
-        loss, struct_loss, feat_loss = loss_func(adj_label, A_hat, attrs, X_hat, args.alpha)
-        l = torch.mean(loss)
-        l.backward()
-        optimizer.step()        
-        print("Epoch:", '%04d' % (epoch), "train_loss=", "{:.5f}".format(l.item()), "train/struct_loss=", "{:.5f}".format(struct_loss.item()),"train/feat_loss=", "{:.5f}".format(feat_loss.item()))
-
-        if epoch%10 == 0 or epoch == args.epoch - 1:
-            model.eval()
+    if args.train == True:
+        for epoch in range(args.epoch):
+            model.train()
+            optimizer.zero_grad()
             A_hat, X_hat = model(attrs, adj)
             loss, struct_loss, feat_loss = loss_func(adj_label, A_hat, attrs, X_hat, args.alpha)
-            score = loss.detach().cpu().numpy()
-            print("Epoch:", '%04d' % (epoch), 'Auc', roc_auc_score(label, score))
+            l = torch.mean(loss)
+            l.backward()
+            optimizer.step()        
+            print("Epoch:", '%04d' % (epoch), "train_loss=", "{:.5f}".format(l.item()), "train/struct_loss=", "{:.5f}".format(struct_loss.item()),"train/feat_loss=", "{:.5f}".format(feat_loss.item()))
+
+            if epoch%10 == 0 or epoch == args.epoch - 1:
+                model.eval()
+                A_hat, X_hat = model(attrs, adj)
+                loss, struct_loss, feat_loss = loss_func(adj_label, A_hat, attrs, X_hat, args.alpha)
+                score = loss.detach().cpu().numpy()
+                print("Epoch:", '%04d' % (epoch), 'Auc', roc_auc_score(label, score))
+    
+    if args.train == False:
+        model.eval()
+        A_hat, X_hat = model(attrs, adj)
+        loss, struct_loss, feat_loss = loss_func(adj_label, A_hat, attrs, X_hat, args.alpha)
+        score = loss.detach().cpu().numpy()
+        print('Auc', roc_auc_score(label, score))
+    
+    if args.train == True:
+        torch.save(model.state_dict(), args.model_path)
+        print("save model")
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--dataset', default='BlogCatalog', help='dataset name: Flickr/ACM/BlogCatalog')
     parser.add_argument('--hidden_dim', type=int, default=64, help='dimension of hidden embedding (default: 64)')
-    parser.add_argument('--epoch', type=int, default=100, help='Training epoch')
+    parser.add_argument('--epoch', type=int, default=5, help='Training epoch')
     parser.add_argument('--lr', type=float, default=5e-3, help='learning rate')
     parser.add_argument('--dropout', type=float, default=0.3, help='Dropout rate')
     parser.add_argument('--alpha', type=float, default=0.8, help='balance parameter')
-    parser.add_argument('--device', default='cuda', type=str, help='cuda/cpu')
+    parser.add_argument('--device', default='cpu', type=str, help='cuda/cpu')
+    parser.add_argument('--model_path', default='./model_weights/model1_100epochs.pth', type=str, help='cuda/cpu')
+    parser.add_argument('--train', default=False, type=bool, help='cuda/cpu')
 
     args = parser.parse_args()
 
