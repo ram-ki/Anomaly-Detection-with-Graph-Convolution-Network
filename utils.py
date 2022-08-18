@@ -12,6 +12,9 @@ def load_anomaly_detection_dataset(dataset, datadir='data'):
     feat = data_mat['Attributes']
     truth = data_mat['Label']
     truth = truth.flatten()
+    print(adj.shape)
+    print(feat.shape)
+    print(truth.shape)
 
     adj_norm = normalize_adj(adj + sp.eye(adj.shape[0]))
     adj_norm = adj_norm.toarray()

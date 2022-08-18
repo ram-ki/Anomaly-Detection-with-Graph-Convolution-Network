@@ -89,13 +89,13 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--dataset', default='BlogCatalog', help='dataset name: Flickr/ACM/BlogCatalog')
     parser.add_argument('--hidden_dim', type=int, default=64, help='dimension of hidden embedding (default: 64)')
-    parser.add_argument('--epoch', type=int, default=5, help='Training epoch')
+    parser.add_argument('--epoch', type=int, default=100, help='Training epoch')
     parser.add_argument('--lr', type=float, default=5e-3, help='learning rate')
     parser.add_argument('--dropout', type=float, default=0.3, help='Dropout rate')
     parser.add_argument('--alpha', type=float, default=0.8, help='balance parameter')
     parser.add_argument('--device', default='cpu', type=str, help='cuda/cpu')
-    parser.add_argument('--model_path', default='./model_weights/model1_100epochs.pth', type=str, help='cuda/cpu')
-    parser.add_argument('--train', default=False, type=bool, help='cuda/cpu')
+    parser.add_argument('--model_path', default='./model_weights/model2_100epochs.pth', type=str, help='cuda/cpu')
+    parser.add_argument('--train', default=True, type=bool, help='cuda/cpu')
 
     args = parser.parse_args()
 
