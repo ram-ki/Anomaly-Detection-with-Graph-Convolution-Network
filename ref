@@ -1,0 +1,7 @@
+BGRNet - https://arxiv.org/pdf/2004.06272.pdf
+Auto-panoptic - https://github.com/Jacobew/AutoPanoptic/blob/main/INSTALL.md
+UPSNet - https://arxiv.org/pdf/1901.03784.pdf
+SOGNet - https://arxiv.org/pdf/1911.07527.pdf
+
+Supplmentary
+GNN for few shot semantic segmentation - https://openaccess.thecvf.com/content/CVPR2021/papers/Xie_Scale-Aware_Graph_Neural_Network_for_Few-Shot_Semantic_Segmentation_CVPR_2021_paper.pdf
