@@ -1,9 +1,6 @@
-Deep Anomaly Detection on Attributed Networks(SDM2019)
+Deep Anomaly Detection on Attributed Networks
 ============
 
-## Dominant
-
-This is the PyTorch source code of paper "[Deep Anomaly Detection on Attributed Networks](http://www.public.asu.edu/~kding9/pdf/SDM2019_Deep.pdf)".
 
 ![The proposed framework](framework.png)
 
